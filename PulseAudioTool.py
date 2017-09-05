@@ -23,7 +23,7 @@ from gi.repository import AppIndicator3 as appindicator
 device_id = 'alsa_input.usb-BLUE_MICROPHONE_Blue_Snowball_201607-00.analog-mono'    #default device id
 volume = 100                                                            # default input volume level
 
-pref_file = 'PulseAudioTool.pref'                                       # default preference file
+pref_file = '.PulseAudioTool.pref'                                       # default preference file
 lock_file = '.PulseAudioTool.lock'                                      # lock file
 
 APPINDICATOR_ID = 'PulseAudioTool'                                      # app id
@@ -34,11 +34,21 @@ broken = False                                                          # microp
 WINDOW_HEIGHT = 200                                                     # default and minimum height of the window
 WINDOW_WIDTH = 400                                                      # default and minimum width of the window
 
-def load_preferences():
-    pass
+def read_preferences(pref_file):
+    global device_id
+    global volume
+    f = open(pref_file, 'r')
+    device_id = f.readline().rstrip('\r\n')
+    volume = int(f.readline().rstrip('\r\n'))
+    f.close()
     
-def save_preferences():
-    pass
+def write_preferences(pref_file):
+    global device_id
+    global volume
+    f = open(pref_file, 'w+')
+    f.write(device_id + '\n')
+    f.write(str(volume))
+    f.close()
 
 def call_pulseaudio_command(device, volume):
     bash_command = 'pacmd set-source-volume ' + device + ' ' + str(volume)
@@ -107,6 +117,7 @@ class Tray_Indicator(object):
         global halted
         halted = True
         os.remove(lock_file)
+        write_preferences(pref_file)
         exit()
 
 class PAT_Window(object):
@@ -148,6 +159,7 @@ class PAT_Window(object):
         def on_changed(widget):
             global volume
             volume = int(widget.get_value())
+            write_preferences(pref_file)
         self.slider.connect('value-changed', on_changed)
         
         self.layout.put(self.slider, 75, 15)
@@ -212,7 +224,10 @@ class PAT_Window(object):
 def main(args):
     if not os.path.exists(lock_file):
         open(lock_file, 'w+')
-        load_preferences()
+        if not os.path.exists(pref_file):
+            write_preferences(pref_file)
+        else:
+            read_preferences(pref_file)
         t1 = threading.Thread(target = set_volume)
         t1.start()
         indicator = Tray_Indicator()
