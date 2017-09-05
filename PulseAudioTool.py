@@ -4,6 +4,8 @@
 # Source: PulseAudioTool.py
 # By: Gregory Norton
 
+# PulseAudio logo from http://blog.rabin.io/wp-content/uploads/2014/10/pulseaudio-logo.png
+
 # main module imports
 from __future__ import division
 import time
