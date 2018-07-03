@@ -116,7 +116,7 @@ class Tray_Indicator(object):
     def quit_app(self, data):
         global halted
         halted = True
-        os.remove(lock_file)
+        #os.remove(lock_file)
         write_preferences(pref_file)
         exit()
 
@@ -223,7 +223,7 @@ class PAT_Window(object):
 
 def main(args):
     if not os.path.exists(lock_file):
-        open(lock_file, 'w+')
+        #open(lock_file, 'w+')
         if not os.path.exists(pref_file):
             write_preferences(pref_file)
         else:

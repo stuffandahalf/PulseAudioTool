@@ -1,0 +1,3 @@
+*.pyc
+.PulseAudioTool.pref
+.PulseAudioTool.lock
